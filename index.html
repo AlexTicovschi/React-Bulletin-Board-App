@@ -6,23 +6,40 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.js"></script>
 	<link rel="stylesheet" href="style.css">
+	<title>Building the Note Board</title>
 </head>
 <body>
 
 	<div id="container"></div>
 	<script type="text/babel">
-		// A stateless functional component is just a simple
-		// function that returns react elements.
-		const Component = () => {
-			return <div>
-				<h1>Hello React!</h1>
-				<p>This is a React stateless functional component!</p>
-			</div>
-		}
 
-		ReactDOM.render(<Component />,
+		var Note = React.createClass({
+			edit() {
+				alert("Editing Note");
+			},
+			remove() {
+				alert("Removing Note");
+			},
+
+			render() {
+				return (
+					<div className="note">
+						<p>{this.props.children}</p>
+						<span>
+							<button onClick={this.edit}>EDIT</button>
+							<button onClick={this.remove}>X</button>
+						</span>
+					</div>
+				)
+			}
+		});
+
+		ReactDOM.render(
+			<Note>Hello World</Note>,
 			document.getElementById('container')
 		);
+
+
 
 	</script>
 
