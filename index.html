@@ -11,13 +11,13 @@
 
 	<div id="container"></div>
 	<script type="text/babel">
-		class Component extends React.Component {
-			render() {
-				return <div>
-					<h1>Hello React!</h1>
-					<p>This is a React Component with ES6!</p>
-				</div>
-			}
+		// A stateless functional component is just a simple
+		// function that returns react elements.
+		const Component = () => {
+			return <div>
+				<h1>Hello React!</h1>
+				<p>This is a React stateless functional component!</p>
+			</div>
 		}
 
 		ReactDOM.render(<Component />,
