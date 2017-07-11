@@ -11,14 +11,14 @@
 
 	<div id="container"></div>
 	<script type="text/babel">
-		var Component = React.createClass({
+		class Component extends React.Component {
 			render() {
 				return <div>
 					<h1>Hello React!</h1>
-					<p>This is a React Component!</p>
+					<p>This is a React Component with ES6!</p>
 				</div>
 			}
-		})
+		}
 
 		ReactDOM.render(<Component />,
 			document.getElementById('container')
