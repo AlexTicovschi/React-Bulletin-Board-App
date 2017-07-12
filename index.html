@@ -12,16 +12,32 @@
 
 	<div id="container"></div>
 	<script type="text/babel">
-
 		var Note = React.createClass({
+			getInitialState() {
+				return {editing: false}
+			},
+			// Every time the edit method is called, set the state to true.
 			edit() {
-				alert("Editing Note");
+				this.setState({editing: true})
+			},
+			// Save is going to be that button on the form that changes the editing state back to false, and displays the note.
+			save() {
+				this.setState({editing: false})
 			},
 			remove() {
 				alert("Removing Note");
 			},
-
-			render() {
+			// renders the form
+			renderForm() {
+				return (
+					<div className="note">
+						<textarea></textarea>
+						<button onClick={this.save}>SAVE</button>
+					</div>
+				)
+			},
+			// renders the display
+			renderDisplay() {
 				return (
 					<div className="note">
 						<p>{this.props.children}</p>
@@ -31,16 +47,20 @@
 						</span>
 					</div>
 				)
+			},
+			// the render method is going to take care of the logic that decides which RENDER METHOD should be displayed
+			render() {
+				if (this.state.editing) { // if editing is true, render the display (return this.renderForm())
+					return this.renderForm();
+				} else { // if it's false, render the display (return this.renderDisplay())
+					return this.renderDisplay();
+				}
 			}
 		});
-
 		ReactDOM.render(
 			<Note>Hello World</Note>,
 			document.getElementById('container')
 		);
-
-
-
 	</script>
 
 </body>
