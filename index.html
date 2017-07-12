@@ -50,10 +50,10 @@
 			},
 			// the render method is going to take care of the logic that decides which RENDER METHOD should be displayed
 			render() {
-				// if editing is true, render the display (return this.renderForm())
+				// if editing is true, render the form (return this.renderForm())
 				// if it's false, render the display (return this.renderDisplay())
 				return (this.state.editing) ? this.renderForm() : this.renderDisplay();
-			}
+			} 
 		});
 		ReactDOM.render(
 			<Note>Hello World</Note>,
