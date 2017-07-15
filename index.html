@@ -22,13 +22,13 @@
 			},
 			// Save is going to be that button on the form that changes the editing state back to false, and displays the note.
 			save() {
-				// grabs the value inside the textarea element
-				var val =  this.refs.newText.value;
-				alert("Later will save this value: " + val);
-				this.setState({editing: false})
+				// whenever the onChange is fired, pass this.refs.newText.value and this.props.id
+				this.props.onChange(this.refs.newText.value, this.props.id)
+				this.setState({editing: false});
 			},
 			remove() {
-				alert("Removing Note");
+				// Removing the Note
+				this.props.onRemove(this.props.id)
 			},
 			// renders the form
 			renderForm() {
@@ -75,21 +75,40 @@
 			getInitialState() {
 					return {
 						notes: [
-							'Call Donald Trump',
-							'Email George Bush',
-							'Eat at Joe\'s',
-							'Finish this app'
+							{id: 0, note: 'Call Donald Trump'},
+							{id: 1, note: 'Email George Bush'},
+							{id: 2, note: 'Eat at Joe\'s'},
+							{id: 3, note: 'Finish this app'}
 						]
 					}
 			},
 
+			update(newText, id) {
+				var notes = this.state.notes.map(
+					note => (note.id !== id) ? note :
+					{
+						...note,
+						note: newText
+					}
+				)
+				this.setState({notes})
+			},
+			remove(id) {
+				var notes = this.state.notes.filter(note => note.id !== id)
+				this.setState({notes})
+			},
+			eachNote(note) {
+				return (<Note key={note.id}
+											id={note.id}
+											onChange={this.update}
+											onRemove={this.remove}>{note.note}
+								</Note>)
+			},
 			render() {
 				return (
 					// this.state.notes.map will map over the notes array and display the content of each note
 					<div className="board">
-						{this.state.notes.map((note, i) => {
-							return <Note key={i}>{note}</Note>
-						})}
+						{this.state.notes.map(this.eachNote)}
 					</div>
 				)
 			}
