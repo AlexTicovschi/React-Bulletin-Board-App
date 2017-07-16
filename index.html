@@ -1,125 +1,120 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <script src="https://fb.me/react-15.2.1.js"></script>
+        <script src="https://fb.me/react-dom-15.2.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <title>Building the Note Board</title>
+    </head>
+    <body>
+        <div id='react-container'></div>
+        <script type="text/babel">
+        var Note = React.createClass({
+            getInitialState() {
+                return {editing: false}
+            },
+            edit() {
+                this.setState({editing: true})
+            },
+            save() {
+                this.props.onChange(this.refs.newText.value, this.props.id)
+                this.setState({editing: false})
+            },
+            remove() {
+                this.props.onRemove(this.props.id)
+            },
+            renderForm() {
+                return (
+                    <div className="note">
+                      <textarea ref="newText"></textarea>
+                      <button onClick={this.save}>SAVE</button>
+                    </div>
+                )
+            },
+            renderDisplay() {
+                return ( 
+                    <div className="note">
+                        <p>{this.props.children}</p>
+                        <span>
+                          <button onClick={this.edit}>EDIT</button>
+                          <button onClick={this.remove}>X</button>
+                        </span>
+                    </div>
+                    )
+            },
+            render() {
+              return (this.state.editing) ? this.renderForm()
+                                          : this.renderDisplay()
 
-<head>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.js"></script>
-	<link rel="stylesheet" href="style.css">
-	<title>Building the Note Board</title>
-</head>
-<body>
+            }
+        })
 
-	<div id="container"></div>
-	<script type="text/babel">
-		var Note = React.createClass({
-			getInitialState() {
-				return {editing: false}
-			},
-			// Every time the edit method is called, set the state to true.
-			edit() {
-				this.setState({editing: true})
-			},
-			// Save is going to be that button on the form that changes the editing state back to false, and displays the note.
-			save() {
-				// whenever the onChange is fired, pass this.refs.newText.value and this.props.id
-				this.props.onChange(this.refs.newText.value, this.props.id)
-				this.setState({editing: false});
-			},
-			remove() {
-				// Removing the Note
-				this.props.onRemove(this.props.id)
-			},
-			// renders the form
-			renderForm() {
-				return (
-					// add a new reference to the textarea
-					<div className="note">
-						<textarea ref="newText"></textarea>
-						<button onClick={this.save}>SAVE</button>
-					</div>
-				)
-			},
-			// renders the display
-			renderDisplay() {
-				return (
-					<div className="note">
-						<p>{this.props.children}</p>
-						<span>
-							<button onClick={this.edit}>EDIT</button>
-							<button onClick={this.remove}>X</button>
-						</span>
-					</div>
-				)
-			},
-			// the render method is going to take care of the logic that decides which RENDER METHOD should be displayed
-			render() {
-				// if editing is true, render the form (return this.renderForm())
-				// if it's false, render the display (return this.renderDisplay())
-				return (this.state.editing) ? this.renderForm() : this.renderDisplay();
-			}
-		});
+        var Board = React.createClass({
+            propTypes: {
+                count: function(props, propName) {
+                    if(typeof props[propName] !== "number") {
+                        return new Error("the count must be a number")
+                    } 
 
-		var Board = React.createClass({
-			propTypes: {
-				count: function(props, propName) {
-					if (typeof props[propName] !== "number") {
-						return new Error("the count must be a number")
-					}
+                    if(props[propName] > 100) {
+                        return new Error('Creating ' + props[propName] + ' notes is ridiculous')
+                    }
+                }
+            },
+            getInitialState() {
+                return {
+                    notes: []
+                }
+            },
+            nextId() {
+                this.uniqueId = this.uniqueId || 0
+                return this.uniqueId++
+            },
+            add(text) {
+                var notes = [
+                    ...this.state.notes,
+                    {
+                        id: this.nextId(),
+                        note: text
+                    }
+                ]
+                this.setState({notes})
+            },
+            update(newText, id) {
+                var notes = this.state.notes.map(
+                    note => (note.id !== id) ?
+                       note : 
+                        {
+                            ...note, 
+                            note: newText
+                        }
+                    )
+                this.setState({notes})
+            },
+            remove(id) {
+                var notes = this.state.notes.filter(note => note.id !== id)
+                this.setState({notes})
+            },
+            eachNote(note) {
+                return (<Note key={note.id}
+                              id={note.id}
+                              onChange={this.update}
+                              onRemove={this.remove}>
+                          {note.note}
+                        </Note>)
+            },
+            render() {
+                return (<div className='board'>
+                           {this.state.notes.map(this.eachNote)}
+                           <button onClick={() => this.add('New Note')}>+</button>
+                        </div>)
+            }
+        })
+        
+        ReactDOM.render(<Board count={10}/>, 
+            document.getElementById('react-container'))
 
-					if (props[propName] > 100) {
-						return new Error('Creating ' + props[propName] + ' notes is ridiculous');
-					}
-				}
-			},
-			getInitialState() {
-					return {
-						notes: [
-							{id: 0, note: 'Call Donald Trump'},
-							{id: 1, note: 'Email George Bush'},
-							{id: 2, note: 'Eat at Joe\'s'},
-							{id: 3, note: 'Finish this app'}
-						]
-					}
-			},
-
-			update(newText, id) {
-				var notes = this.state.notes.map(
-					note => (note.id !== id) ? note :
-					{
-						...note,
-						note: newText
-					}
-				)
-				this.setState({notes})
-			},
-			remove(id) {
-				var notes = this.state.notes.filter(note => note.id !== id)
-				this.setState({notes})
-			},
-			eachNote(note) {
-				return (<Note key={note.id}
-											id={note.id}
-											onChange={this.update}
-											onRemove={this.remove}>{note.note}
-								</Note>)
-			},
-			render() {
-				return (
-					// this.state.notes.map will map over the notes array and display the content of each note
-					<div className="board">
-						{this.state.notes.map(this.eachNote)}
-					</div>
-				)
-			}
-		});
-
-		ReactDOM.render(
-			<Board count={10} />,
-			document.getElementById('container')
-		);
-	</script>
-
-</body>
-
+        </script>
+    </body>
 </html>
